@@ -109,7 +109,7 @@ STATICFILES_LOCATION = 'static'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'twitter_project/static')
+    os.path.join(BASE_DIR, 'shorter/static')
 ]
 
 django_heroku.settings(locals())

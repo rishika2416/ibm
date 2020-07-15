@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <title>Twitter Sentiment</title>
+    <style>
+        * {
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: lightblue url("/static/home/img/bg/twitter-bird.jpg") no-repeat fixed center;
+            background-size: 100% 100%;
+        }
+
+        #content{
+            text-align: center;
+            margin: 40px;
+        }
+        #button{
+            width: 110%;
+            border: 3px solid black;
+            background-color: #1DA1F2;
+            text-align: center;
+            text-shadow: 2px 2px 5px black;
+        }
+        #hashphrase{
+            margin-top: 170px;
+            width: 110%;
+            border: 3px solid black;
+            text-align: center;
+
+        }
+        #h11{
+            color: #1DA1F2;
+            font-size: 75px;
+            margin-top: 25px;
+            text-align: center;
+            text-shadow: 2px 2px 5px black;
+        }
+        #h12{
+            color: #1DA1F2;
+            font-size: 35px;
+            margin-top: 10px;
+            text-align: center;
+        }
+     </style>
+</head>
+<body>
+
+    <div id="content">
+        <h1 id="h11">Strategy + Business</h1>
+        <h4 id="h12">
+           Since Covid19
+        </h4>
+        <form method="POST" action="{% url 'home'%}">
+            {% csrf_token %}
+            <label for="hashphrase">
+            <div class="form-group">
+            <input class="form-control form-control-lg" type="text" name="hashphrase" id="hashphrase" placeholder="Enter Hashphrase...">
+            </div>
+            <button type="submit" class="btn btn-primary" id="button">Search</button>
+                {% if error %}
+                <br>
+                <p>
+                    <strong>{{ error }}</strong>
+                </p>
+                {% endif %}
+            </label>
+        </form>
+    </div>
+</body>
+</html>

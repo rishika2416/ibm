@@ -239,13 +239,13 @@ def clean_tweets(lst):
 #     plot_div = plot(fig, output_type='div', include_plotlyjs=False)
 #     return plot_div
 
-# def current_graph(df4):
-#     fig = go.Figure([go.Scatter(x=df4['timestamp'], y=df4['sentiment'])])
-#     fig.update_layout(
-#         title_text="Sentiments score against time for current tweet",
-#     )
-#     plot_div = plot(fig, output_type='div', include_plotlyjs=False)
-#     return plot_div
+def current_graph(df4):
+    fig = go.Figure([go.Scatter(x=df4['timestamp'], y=df4['sentiment'])])
+    fig.update_layout(
+        title_text="Sentiments score against time for current tweet",
+    )
+    plot_div = plot(fig, output_type='div', include_plotlyjs=False)
+    return plot_div
 
 def home1(request):
     return render(request, 'home/home.html')
@@ -288,7 +288,7 @@ def home(request):
             return render(request, 'home/home.html', context)
         df4['Tweet_final'] = clean_tweets(df4['tweet_text'])
         df4 = compound_score(df4)
-        # curr = current_graph(df4)
+        curr = current_graph(df4)
         hist = histogram(df4)
         df4['score'] = df4['Tweet_final'].apply(lambda x: sentiment_analyzer_scores(x))
         stoplist = stopwords.words('english')
@@ -312,7 +312,7 @@ def home(request):
             'positive': pos,
             'negative': neg,
             # 'old': oldtweets,
-            # 'curr': curr,
+            'curr': curr,
         }
 
     return render(request, 'home/welcome.html', context)

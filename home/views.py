@@ -9,7 +9,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import plotly.express as px
 from wordcloud import WordCloud
-# import GetOldTweets3 as got
+import GetOldTweets3 as got
+import time
+import requests
+import json
 import nltk
 from nltk.corpus import stopwords
 import csv
@@ -51,7 +54,7 @@ def create_dataset(new):
     os.remove('{}.csv'.format(new))
     index = dataset.index
     if dataset.empty:
-        return None
+        return dataset
     df = pd.DataFrame(dataset.tweet_text)
     pattern = re.compile(r'[\\]+[\w\w\w]+')
     t = []
@@ -153,11 +156,6 @@ def top_neg_sentiments(train):
     return neg
 
 def handle_tweet(result):
-    # mapping to range 0-1
-    result = result + 1
-    result = result/2
-    if result == 0.0:
-        result = 0.01
     return result*100
 
 def get_intent(results):
@@ -196,48 +194,49 @@ def clean_tweets(lst):
     lst = np.core.defchararray.replace(lst, "[^a-zA-Z#]", " ")
     return lst
 
-# def show_trends(new_hash):
-# #     since = ["2019-10-01", "2019-11-01", "2019-12-01", "2020-01-01", "2020-02-01", "2020-03-01", "2020-04-01",
-# #              "2020-05-01", "2020-06-01"]
-# #     until = ["2019-10-31", "2019-11-30", "2019-12-31", "2020-01-31", "2020-02-28", "2020-03-30", "2020-04-30",
-# #              "2020-05-30", "2020-06-30"]
-# #     df1 = pd.DataFrame(columns=['tweet', 'date'])
-# #     for i in range(9):
-# #         tweetCriteria = got.manager.TweetCriteria().setQuerySearch(new_hash) \
-# #             .setSince(since[i]) \
-# #             .setUntil(until[i]) \
-# #             .setLang('en') \
-# #             .setMaxTweets(100)
-# #         # Creation of list that contains all tweets
-# #         tweets = got.manager.TweetManager.getTweets(tweetCriteria)
-# #         # Creating list of chosen tweet data
-# #         text_tweets = [tweet.text for tweet in tweets]
-# #         text_date = [str(tweet.date)[:-14] for tweet in tweets]
-#         d = {
-#             'tweet': text_tweets,
-#             'date': text_date
-#          }
-#         df2=pd.DataFrame(d)
-#         df1=pd.concat([df1, df2])
-#     df1['Tweet_final'] = clean_tweets(df1['tweet'])
-#     df1=df1.drop(["tweet"], axis=1)
-#     df1=compound_score(df1)
-#     df1=df1.drop(["Tweet_final"], axis=1)
-#     df1['y'] = df1['sentiment'].apply(lambda x: handle_tweet(x))
-#     df1=df1.drop(["sentiment"], axis=1)
-#     df1 = df1.set_index(pd.to_datetime(df1.iloc[:, 0])).drop('date', axis=1)
-#     df_year = pd.DataFrame({"y": df1.y.resample("M").sum()})
-#     df_year['mva'] = df_year.y.rolling(center=True, window=2).mean()
-#     fig = go.Figure()
-#     fig.add_trace(go.Scatter(x=since, y=df_year['mva'], name='Monthly Average',
-#                          line=dict(color='firebrick', width=4)))
-#     fig.add_trace(go.Scatter(x=since, y=df_year['y'], name='Actual',
-#                          line=dict(color='royalblue', width=4)))
-#     fig.update_layout(title='Trends in Historic Tweets',
-#                    xaxis_title ='Month',
-#                    yaxis_title ='Sentiment Score')
-#     plot_div = plot(fig, output_type='div', include_plotlyjs=False)
-#     return plot_div
+def show_trends(new_hash):
+    since = ["2019-10-01", "2019-11-01", "2019-12-01", "2020-01-01", "2020-02-01", "2020-03-01", "2020-04-01",
+             "2020-05-01", "2020-06-01"]
+    until = ["2019-10-31", "2019-11-30", "2019-12-31", "2020-01-31", "2020-02-28", "2020-03-30", "2020-04-30",
+             "2020-05-30", "2020-06-30"]
+    df1 = pd.DataFrame(columns=['tweet', 'date'])
+    for i in range(9):
+        tweetCriteria = got.manager.TweetCriteria().setQuerySearch(new_hash) \
+            .setSince(since[i]) \
+            .setUntil(until[i]) \
+            .setLang('en') \
+            .setMaxTweets(30)
+        # Creation of list that contains all tweets
+        tweets = got.manager.TweetManager.getTweets(tweetCriteria)
+        # Creating list of chosen tweet data
+        text_tweets = [tweet.text for tweet in tweets]
+        text_date = [str(tweet.date)[:-14] for tweet in tweets]
+        d = {
+            'tweet': text_tweets,
+            'date': text_date
+         }
+        df2=pd.DataFrame(d)
+        df1=pd.concat([df1, df2])
+    df1['Tweet_final'] = clean_tweets(df1['tweet'])
+    df1=df1.drop(["tweet"], axis=1)
+    df1=compound_score(df1)
+    df1=df1.drop(["Tweet_final"], axis=1)
+    df1['y'] = df1['sentiment'].apply(lambda x: handle_tweet(x))
+    df1=df1.drop(["sentiment"], axis=1)
+    df1 = df1.set_index(pd.to_datetime(df1.iloc[:, 0])).drop('date', axis=1)
+    df_year = pd.DataFrame({"y": df1.y.resample("M").sum()})
+    df_year['mva'] = df_year.y.rolling(center=True, window=2).mean()
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=since, y=df_year['mva'], name='Monthly Average',
+                         line=dict(color='firebrick', width=4)))
+    fig.add_trace(go.Scatter(x=since, y=df_year['y'], name='Actual',
+                         line=dict(color='royalblue', width=4)))
+    fig.update_layout(title='Trends in Historic Tweets',
+                   xaxis_title ='Month',
+                   yaxis_title ='Sentiment Score')
+    plot_div = plot(fig, output_type='div', include_plotlyjs=False)
+    return plot_div
+
 
 def current_graph(df4):
     fig = go.Figure([go.Scatter(x=df4['timestamp'], y=df4['sentiment'])])
@@ -246,6 +245,131 @@ def current_graph(df4):
     )
     plot_div = plot(fig, output_type='div', include_plotlyjs=False)
     return plot_div
+
+
+def news(request):
+    API_Token = '29f170ee129de334f76cc958a89e4252'
+    url = 'https://gnews.io/api/v3/search?q='
+    url = url + 'covid19' + '&' + 'country=in' + '&' + 'max=9' + '&' + 'token=' + API_Token
+    r = requests.get(url).json()
+
+    arr = []
+    for i in r['articles']:
+        arr.append({'title': i['title'], 'description': i['description'], 'image': i['image'],
+                    'name': i['source']['name'], 'url': i['source']['url']})
+
+    arr1 = arr[:3]
+    arr2 = arr[3:6]
+    arr3 = arr[6:]
+    context = {
+        'news1': arr1,
+        'news2': arr2,
+        'news3': arr3,
+    }
+    return render(request, 'home/news.html', context)
+
+def world():
+    url = 'https://covid2019-api.herokuapp.com/v2/country/USa'
+    r = requests.get(url).json()
+
+    arr = []
+    for i in r['data']:
+        arr.append([i['location'], i['confirmed'], i['recovered'], i['deaths'], i['active']])
+    df = pd.DataFrame(data=arr)
+    df.columns = ['country', 'confirmed', 'recovered', 'deaths', 'active']
+    with open('home/static/home/isofile/data.json', 'rb') as fp:
+        data = json.load(fp)
+
+    df['iso_location'] = df['country'].apply(lambda x: data[x])
+
+
+    fig = px.choropleth(df, locations='iso_location', color='active',
+                        range_color=(0, 10000),
+                        hover_data=['country', 'confirmed', 'recovered', 'deaths'],
+                        projection='orthographic',
+                        title='Covid19 Worldwide Stats',
+                        color_continuous_scale=px.colors.sequential.Plasma,
+                        )
+    fig.update_geos(
+        showocean=True, oceancolor="LightBlue",
+    )
+    fig.update_layout(margin={"r": 60, "t": 50, "l": 60, "b": 50})
+
+    plot_div = plot(fig, output_type='div', include_plotlyjs=False)
+
+    df2 = df.iloc[:20]
+
+    fig1 = go.Figure()
+    fig1.add_trace(go.Bar(
+        y=df2['country'],
+        x=df2['active'],
+        name='active',
+        width=0.8,
+        orientation='h',
+        marker=dict(
+            color='rgba(11, 48, 100,0.6)',
+            line=dict(color='rgb(11, 48, 100)', width=3)
+        )
+    ))
+    fig1.add_trace(go.Bar(
+        y=df2['country'],
+        x=df2['recovered'],
+        name='recovered',
+        width=0.8,
+        orientation='h',
+        marker=dict(
+            color='rgba(43, 95, 6,0.6)',
+            line=dict(color='rgb(43, 95, 6)', width=3)
+        )
+    ))
+    fig1.add_trace(go.Bar(
+        y=df2['country'],
+        x=df2['deaths'],
+        name='deaths',
+        width=0.8,
+        orientation='h',
+        marker=dict(
+            color='rgba(141, 27, 16,0.6)',
+            line=dict(color='rgb(141, 27, 16)', width=3)
+        )
+    ))
+
+    fig1.update_layout(
+        title='Comparison of reported covid19 cases',
+        xaxis_title='Covid19 Cases',
+        yaxis_title='Country',
+        height=900,
+        barmode='stack'),
+    plot_div1 = plot(fig1, output_type='div', include_plotlyjs=False)
+    return plot_div, plot_div1, r['dt']
+
+def statistic(request):
+    world_graph, bargraph, current_date = world()
+    t = time.localtime()
+    current_time = time.strftime("%H:%M:%S", t)
+    url = 'https://covid2019-api.herokuapp.com/v2/total'
+    r = requests.get(url).json()
+
+    info = r['data']
+
+    context = {
+        "world": world_graph,
+        'bar': bargraph,
+        'date': current_date,
+        'time': current_time,
+        'info': info,
+    }
+    return render(request, 'home/world.html', context)
+
+def oldtweets(request):
+    if 'oldtweets' in request.POST:
+        trend = "#"+request.POST.get("oldtweets")
+        old = show_trends(trend)
+        context ={
+            'old': old,
+        }
+    return render(request, 'home/oldtweets.html', context)
+
 
 def home1(request):
     return render(request, 'home/home.html')
@@ -256,6 +380,25 @@ def home(request):
         if w == "":
             context = {
                 'error': "Please input a hashphrase.",
+            }
+
+            return render(request, 'home/home.html', context)
+
+        elif w in ['#', '@', '!', '$', '%', '^', '&', '*', '(', ')']:
+            context = {
+                'error': "Please input a valid hashphrase.",
+            }
+            return render(request, 'home/home.html', context)
+
+        elif w in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']:
+            context = {
+                'error': "Please input a valid hashphrase.",
+            }
+            return render(request, 'home/home.html', context)
+
+        elif w[0] == "#":
+            context = {
+                'error': "Please input hashphrase without '#'.",
             }
 
             return render(request, 'home/home.html', context)
@@ -276,7 +419,6 @@ def home(request):
             else:
                 arr.append(i)
         new_hash = " ".join(arr)
-        # oldtweets = show_trends(new_hash)
         fname = '_'.join(re.findall(r'#(\w+)', new_hash))
         search_for_hashtags(fname, new_hash)
         new = 'hastag' + fname
@@ -291,6 +433,7 @@ def home(request):
         curr = current_graph(df4)
         hist = histogram(df4)
         df4['score'] = df4['Tweet_final'].apply(lambda x: sentiment_analyzer_scores(x))
+        # nltk.download('stopwords')
         stoplist = stopwords.words('english')
         i = ['Name', 'dtype', 'object', 'Length', 'Tweet_final', 'amp']
         stoplist.extend(i)

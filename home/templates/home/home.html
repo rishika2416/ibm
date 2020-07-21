@@ -16,14 +16,16 @@
             box-sizing: border-box;
         }
 
-        body {
-            background: lightblue url("/static/home/img/bg/twitter-bird.jpg") no-repeat fixed center;
-            background-size: 100% 100%;
+        #bd {
+            background: rgb(2,0,36);
+            background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
+            background: url("/static/home/img/bg/twitter-bird1.jpg") no-repeat fixed center, linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
+            background-size: 100%;
         }
 
         #content{
             text-align: center;
-            margin: 40px;
+            margin: 10px;
         }
         #button{
             width: 110%;
@@ -42,19 +44,20 @@
         #h11{
             color: #1DA1F2;
             font-size: 75px;
-            margin-top: 25px;
+            margin-top: 0px;
             text-align: center;
             text-shadow: 2px 2px 5px black;
         }
         #h12{
             color: #1DA1F2;
             font-size: 35px;
-            margin-top: 10px;
+            margin-top: 2px;
             text-align: center;
+            text-shadow: 2px 2px 2px white;
         }
      </style>
 </head>
-<body>
+<body id="bd">
 
     <div id="content">
         <h1 id="h11">Strategy + Business</h1>

@@ -22,10 +22,10 @@ analyser = SentimentIntensityAnalyzer()
 nltk.download('stopwords')
 
 def search_for_hashtags(fname, hashtag_phrase):
-    consumer_key = 'TI6eKMiw2zrCYgJSEBx65J5Wd'
-    consumer_secret = 'QaPthwlnw96U0yxw7rW6iMX0Uw0R6qIamgPZWmIKLn8KCo7o9B'
-    access_token = '957493071477747714-WrYCL8BXZRTDKw6PrDrpfSVDpjjaMzG'
-    access_token_secret = 'eV2SLOgs94YL7cqj2lf3iCNI4Kn0EvsjjAsDw8wuLPgXj'
+    consumer_key = ''
+    consumer_secret = ''
+    access_token = ''
+    access_token_secret = ''
     # create authentication for accessing Twitter
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)

@@ -34,7 +34,7 @@ six==1.15.0
 sqlparse==0.3.1
 tqdm==4.47.0
 tweepy==3.9.0
-urllib3==1.25.9
+urllib3==1.26.5
 vaderSentiment==3.3.2
 whitenoise==5.1.0
 wordcloud==1.7.0

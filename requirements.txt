@@ -12,7 +12,7 @@ gunicorn==20.0.4
 idna==2.10
 joblib==0.16.0
 kiwisolver==1.2.0
-lxml==4.5.2
+lxml==4.6.5
 matplotlib==3.2.2
 nltk==3.5
 numpy==1.19.0
